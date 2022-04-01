@@ -1,5 +1,5 @@
 module.exports = (client) => {
+  console.log('Bot ready');
   client.loadComponents();
-  console.log('load commands');
   client.loadCommands();
 }

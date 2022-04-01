@@ -2,19 +2,38 @@ class ModalResponse {
   #pilotId;
   #name;
 
+  /**
+   * Creates a new modal response.
+   * @constructor
+   * @param {ModalSubmitInteraction} modal
+   */
   constructor(modal) {
     this.#pilotId = modal.getTextInputValue('pilot-id');
     this.#name = modal.getTextInputValue('name');
   }
 
+  /**
+   * Returns name inputted by user in modal input
+   * @returns {string}
+   */
   get name() {
     return this.#name;
   }
 
+  /**
+   * Returns pilot ID inputted by user in modal input
+   * @return {string}
+   */
   get pilotId() {
     return this.#pilotId;
   }
 
+  /**
+   * Returns the name inputted by the user after sanitisation.
+   * Sanitisation involves capitalising the first character of each name and forcing
+   * all characters after to be lowercase.
+   * @returns {string}
+   */
   get sanitisedName() {
     return this.#name.split(' ').map(part => {
       // handle double-barrel surnames....

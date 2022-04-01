@@ -10,7 +10,7 @@ class DiscordBot extends Client {
   #servers;
 
   constructor(token, servers) {
-    console.log(`creating bot for ${token}`);
+    console.log(`Creating new Discord bot for ${token.substr(-8)}`);
     super({ intents: [ Intents.FLAGS.GUILDS ] })
     discordModal(this);
 
@@ -23,16 +23,29 @@ class DiscordBot extends Client {
     this.loadEvents();
   }
 
+  /**
+   * Gets the Discord role that should be added to users that have been granted access, by server ID
+   * @param {Snowflake} serverId
+   * @returns {Snowflake}
+   */
   getRoleByServerID(serverId) {
     return this.#servers[serverId].accessRole;
   }
 
+  /**
+   * Gets the separator that should be used in nicknames for a server
+   * @param {Snowflake} serverId
+   * @returns {string}
+   */
   getNickSeparatorByServerID(serverId) {
     return this.#servers[serverId].separator;
   }
 
+  /**
+   * Loads Discord '.on' events
+   */
   loadEvents() {
-    console.log('loading events')
+    console.log('Loading events...')
     const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(fileName => { return fileName.endsWith('.js'); });
 
     eventFiles.forEach(fileName => {
@@ -43,7 +56,11 @@ class DiscordBot extends Client {
     })
   }
 
+  /**
+   * Adds components to Discord client for reference and easier component interaction handling
+   */
   loadComponents() {
+    console.log('Loading components...')
     const buttons = fs.readdirSync(path.join(__dirname, 'components')).filter(fileName => { return fileName.endsWith('.js') });
     buttons.forEach(fileName => {
       const buttonInfo = require(`./components/${fileName}`);
@@ -54,8 +71,11 @@ class DiscordBot extends Client {
     });
   }
 
+  /**
+   * Loads slash commands
+   */
   async loadCommands() {
-    console.log('loading commands...');
+    console.log('Loading commands...');
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(fileName => { return fileName.endsWith('.js') });
 
     const commands = commandFiles.map(fileName => {
@@ -68,10 +88,10 @@ class DiscordBot extends Client {
     });
 
     Object.entries(this.#servers).forEach(async ([guildId, server]) => {
-      console.log(guildId, server);
+      console.log('Registering commands...')
       const commandsSet = await this.application.commands.set(commands, guildId);
       commandsSet.each(command => {
-        console.log('setting', server.permissionRole)
+        console.log('Setting permissions for commands to', server.permissionRole)
         command.permissions.set({
           permissions: [{
             id: server.permissionRole,

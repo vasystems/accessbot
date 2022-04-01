@@ -1,18 +1,12 @@
-const tokenInfo = require('./config/discord.json');
 const DiscordBot = require('./src');
-
+const { DISCORD_TOKEN, BOT_SERVERS } = require('./src/constants/configuration');
 
 async function start() {
-  const bots = [];
-  tokenInfo.forEach(async tokenDetails => {
-    try {
-      console.log(`making bot for ${tokenDetails.token}`)
-      const bot = new DiscordBot(tokenDetails.token, tokenDetails.servers);
-      bots.push(bot);
-    } catch(e) {
-      console.log(e)
-    }
-  })
+  try {
+    new DiscordBot(DISCORD_TOKEN, BOT_SERVERS);
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 start();
