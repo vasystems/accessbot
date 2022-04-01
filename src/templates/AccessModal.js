@@ -1,5 +1,6 @@
 
 const { Modal, TextInputComponent } = require('discord-modals');
+const { AIRLINE_ID } = require('../constants/configuration');
 
 const ACCESS_REQUEST_MODAL = new Modal()
   .setCustomId('access-form')
@@ -10,7 +11,7 @@ const ACCESS_REQUEST_MODAL = new Modal()
       .setStyle('SHORT')
       .setMinLength(7)
       .setMaxLength(8)
-      .setPlaceholder('RYR0001')
+      .setPlaceholder(`${AIRLINE_ID}0001`)
       .setRequired(true),
     new TextInputComponent()
       .setCustomId('name')
