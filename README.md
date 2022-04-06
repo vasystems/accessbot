@@ -7,6 +7,7 @@ To configure this bot, a `config` folder needs to be made in the root directory 
 ### discord.json
 ```js
 {
+  "airlineID": "", // prefix for pilot ID usernames in the server
   "vamsysKey": "", // 'abcdefgh-ijkl-mnop-qrst-uvwxyz012345'
   "discordToken": "", // Discord bot token
   "servers": {

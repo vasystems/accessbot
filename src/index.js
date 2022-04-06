@@ -23,6 +23,26 @@ class DiscordBot extends Client {
     this.loadEvents();
   }
 
+  async checkRoleConfiguration() {
+   const roleConfigurations = await Promise.all([...Object.keys(this.#servers)].map(async (guildId) => {
+      const guild = await this?.guilds.fetch(guildId);
+
+      const botRole = guild.roles.botRoleFor(this.user.id);
+      const accessRole = this.getRoleByServerID(guildId);
+
+      const roleComparison = guild.roles.comparePositions(botRole, accessRole);
+
+      if (roleComparison < 0) {
+        console.log(`Access role is lower in the role hierachy in comparison to the bot's role. The bot role needs to be moved higher in the role hierarchy settings for the server.`)
+        return false;
+      }
+
+      return true;
+    }));
+
+    return await !roleConfigurations.includes(false);
+  }
+
   /**
    * Gets the Discord role that should be added to users that have been granted access, by server ID
    * @param {Snowflake} serverId
