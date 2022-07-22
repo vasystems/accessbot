@@ -1,27 +1,38 @@
+const { InteractionType, ComponentType } = require("discord.js");
+
 module.exports = async (interaction) => {
-  if (interaction.isCommand()) {
-    console.log(`${interaction?.commandName} command interaction from ${interaction?.user?.tag} registered`)
+  let interactionId;
 
-    const commandName = interaction.commandName;
-    const commandHandler = interaction.client.handlers.get(commandName);
+  switch (interaction.type) {
+    case InteractionType.ApplicationCommand:
+      interactionId = interaction.commandName;
+      console.log(`${interactionId} COMMAND interaction from ${interaction?.user?.tag} registered`)
+      break;
 
-    try {
-      return await commandHandler.execute(interaction);
-    } catch(e) {
-      console.log(e);
-    }
+    case InteractionType.MessageComponent:
+      if (interaction.componentType === ComponentType.Button) {
+        interactionId = interaction.customId;
+        console.log(`${interactionId} BUTTON interaction from ${interaction?.user?.tag} registered`);
+      }
+      break;
+    
+    case InteractionType.ModalSubmit:
+      interactionId = interaction.customId;
+      console.log(`${interactionId} MODAL submission from ${interaction?.user?.tag} registered`);
+      break;
+      
+    default:
+      console.log(`${interactionId} interaction from ${interaction?.user?.tag} not handled`);
+      return;
   }
 
-  if (interaction.isButton()) {
-    console.log(`${interaction?.customId} button interaction from ${interaction?.user?.tag} registered`);
+  const interactionHandler = interaction.client.handlers.get(interactionId);
 
-    const interactionId = interaction.customId;
-    const interactionHandler = interaction.client.handlers.get(interactionId);
+  console.log(interactionId);
 
-    try {
-      return await interactionHandler.execute(interaction);
-    } catch(e) {
-      console.log(e);
-    }
+  try {
+    return await interactionHandler.execute(interaction);
+  } catch(e) {
+    console.log(e);
   }
 }

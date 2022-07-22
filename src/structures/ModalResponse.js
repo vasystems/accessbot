@@ -8,8 +8,8 @@ class ModalResponse {
    * @param {ModalSubmitInteraction} modal
    */
   constructor(modal) {
-    this.#pilotId = modal.getTextInputValue('pilot-id');
-    this.#name = modal.getTextInputValue('name');
+    this.#pilotId = modal.fields.getTextInputValue('pilot-id');
+    this.#name = modal.fields.getTextInputValue('name');
   }
 
   /**

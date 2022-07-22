@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 
-const ACCESS_REQUEST_MODAL = require('../components/activateModal').data;
+const accessRequestButton = require('../components/activateModal').data;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
     console.log(`Handling createRequestButton command for ${interaction?.user?.tag}`)
 
     await interaction.deferReply();
-    await interaction.channel.send({ components: [ ACCESS_REQUEST_MODAL ] });
+    await interaction.channel.send({ components: [ accessRequestButton ] });
     await interaction.deleteReply();
   }
 }

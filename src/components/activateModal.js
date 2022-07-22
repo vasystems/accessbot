@@ -1,29 +1,19 @@
-const { MessageActionRow, MessageButton } = require('discord.js');
-const { showModal } = require('discord-modals');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
-const ACCESS_REQUEST_MODAL = require('../templates/AccessModal');
+const accessRequestModal = require('../modals/AccessModal').data;
 
 module.exports = {
-  data: new MessageActionRow()
+  data: new ActionRowBuilder()
     .addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId('activate-modal')
         .setLabel('Request Access')
-        .setStyle('PRIMARY')
+        .setStyle(ButtonStyle.Primary)
     ),
   async execute(interaction) {
-    switch(interaction.customId) {
-      case 'activate-modal':
-        const modalToDisplay = ACCESS_REQUEST_MODAL;
-        modalToDisplay.setTitle(`Request access to ${interaction.guild.name}`)
+    const modalToDisplay = accessRequestModal;
+    modalToDisplay.setTitle(`Request access to ${interaction.guild.name}`)
 
-        showModal(ACCESS_REQUEST_MODAL, {
-          client: interaction.client,
-          interaction: interaction,
-        });
-        break;
-      default:
-        console.log(`Button interaction for ${interaction.customID} was not handled.`)
-    }
+    interaction.showModal(accessRequestModal)
   }
 }

@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { Client, Collection, Intents } = require('discord.js');
-
-const discordModal = require('discord-modals');
+const { Client, Collection, GatewayIntentBits, ApplicationCommandPermissionType } = require('discord.js');
 
 class DiscordBot extends Client {
   #token;
@@ -11,8 +9,7 @@ class DiscordBot extends Client {
 
   constructor(token, servers) {
     console.log(`Creating new Discord bot for ${token.substr(-8)}`);
-    super({ intents: [ Intents.FLAGS.GUILDS ] })
-    discordModal(this);
+    super({ intents: [ GatewayIntentBits.Guilds ] })
 
     this.handlers = new Collection();
 
@@ -23,16 +20,21 @@ class DiscordBot extends Client {
     this.loadEvents();
   }
 
+  /**
+   * Validates the role configuration in the server
+   * ie. bot role should be > role that is being awarded
+   * @returns {boolean}
+   */
   async checkRoleConfiguration() {
    const roleConfigurations = await Promise.all([...Object.keys(this.#servers)].map(async (guildId) => {
       const guild = await this?.guilds.fetch(guildId);
 
-      const botRole = guild.roles.botRoleFor(this.user.id);
+      const botRole = await guild.roles.botRoleFor(this.user.id);
       const accessRole = this.getRoleByServerID(guildId);
 
       const roleComparison = guild.roles.comparePositions(botRole, accessRole);
 
-      if (roleComparison < 0) {
+      if (roleComparison <= 0) {
         console.log(`Access role is lower in the role hierachy in comparison to the bot's role. The bot role needs to be moved higher in the role hierarchy settings for the server.`)
         return false;
       }
@@ -66,6 +68,7 @@ class DiscordBot extends Client {
    */
   loadEvents() {
     console.log('Loading events...')
+
     const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(fileName => { return fileName.endsWith('.js'); });
 
     eventFiles.forEach(fileName => {
@@ -77,25 +80,11 @@ class DiscordBot extends Client {
   }
 
   /**
-   * Adds components to Discord client for reference and easier component interaction handling
-   */
-  loadComponents() {
-    console.log('Loading components...')
-    const buttons = fs.readdirSync(path.join(__dirname, 'components')).filter(fileName => { return fileName.endsWith('.js') });
-    buttons.forEach(fileName => {
-      const buttonInfo = require(`./components/${fileName}`);
-
-      buttonInfo.data.components.forEach(component => {
-        this.handlers.set(component.customId, buttonInfo);
-      })
-    });
-  }
-
-  /**
    * Loads slash commands
    */
-  async loadCommands() {
+   async loadCommands() {
     console.log('Loading commands...');
+
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(fileName => { return fileName.endsWith('.js') });
 
     const commands = commandFiles.map(fileName => {
@@ -109,19 +98,43 @@ class DiscordBot extends Client {
 
     Object.entries(this.#servers).forEach(async ([guildId, server]) => {
       console.log('Registering commands...')
-      const commandsSet = await this.application.commands.set(commands, guildId);
-      commandsSet.each(command => {
-        console.log('Setting permissions for commands to', server.permissionRole)
-        command.permissions.set({
-          permissions: [{
-            id: server.permissionRole,
-            type: 'ROLE',
-            permission: true,
-          }]
-        })
-      });
+
+      await this.application.commands.set(commands, guildId);
     });
   }
+
+  /**
+   * Adds components and modals to Discord client for reference and easier component interaction handling
+   */
+  loadComponents() {
+    console.log('Loading components...')
+
+    const buttons = fs.readdirSync(path.join(__dirname, 'components')).filter(fileName => { return fileName.endsWith('.js') });
+
+    buttons.forEach(fileName => {
+      const buttonInfo = require(`./components/${fileName}`);
+
+      buttonInfo.data.components.forEach(component => {
+        this.handlers.set(component.data.custom_id, buttonInfo);
+      })
+    });
+  }
+
+  loadModals() {
+    console.log('Loading modals...')
+
+    const modals = fs.readdirSync(path.join(__dirname, 'modals')).filter(fileName => { return fileName.endsWith('.js') });
+
+    modals.forEach(fileName => {
+      const modalInfo = require(`./modals/${fileName}`);
+
+      const modal = modalInfo.data;
+      this.handlers.set(modal.data.custom_id, modalInfo);
+
+      console.log(modalInfo.data)
+    });
+  }
+  
 }
 
 module.exports = DiscordBot;
