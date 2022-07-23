@@ -130,8 +130,6 @@ class DiscordBot extends Client {
 
       const modal = modalInfo.data;
       this.handlers.set(modal.data.custom_id, modalInfo);
-
-      console.log(modalInfo.data)
     });
   }
   
