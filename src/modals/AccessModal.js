@@ -53,13 +53,22 @@ const ACCESS_REQUEST_MODAL = {
         return await interaction.followUp({content: 'Your details were incorrect. Please try again, ensuring that you have entered your details exactly as requested above.', ephemeral: true});
       }
 
-      console.log(`${interaction?.user?.tag} granted access`)
-
       const nickname = userResponse.sanitisedName;
-      const separator = interaction.client.getNickSeparatorByServerID(interaction.guildId);
+
+      const serverConfiguration = interaction.client.getServerConfiguration(interaction.guildId);
+      const separator = serverConfiguration.nickSeparator
 
       await interaction.member.setNickname(`${nickname}${separator}${pilotId}`);
-      await interaction.member.roles.add(interaction.client.getRoleByServerID(interaction.guildId));
+
+      const roleRemovalEnabled = serverConfiguration.roleRemoval.enabled;
+
+      if (roleRemovalEnabled) {
+        console.log(serverConfiguration.roleRemoval.roleId);
+        await interaction.member.roles.remove(serverConfiguration.roleRemoval.roleId)
+      }
+
+      await interaction.member.roles.add(serverConfiguration.accessRole);
+
       await interaction.followUp({content: `Welcome to ${interaction.guild.name}!`});
     } catch(e) {
       console.log(e);
