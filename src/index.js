@@ -26,41 +26,49 @@ class DiscordBot extends Client {
    * @returns {boolean}
    */
   async checkRoleConfiguration() {
-   const roleConfigurations = await Promise.all([...Object.keys(this.#servers)].map(async (guildId) => {
-      const guild = await this?.guilds.fetch(guildId);
-
-      const botRole = await guild.roles.botRoleFor(this.user.id);
-      const accessRole = this.getRoleByServerID(guildId);
-
-      const roleComparison = guild.roles.comparePositions(botRole, accessRole);
-
-      if (roleComparison <= 0) {
-        console.log(`Access role is lower in the role hierachy in comparison to the bot's role. The bot role needs to be moved higher in the role hierarchy settings for the server.`)
-        return false;
+    return new Promise(async (resolve, reject) => {
+      for await (const guildId of Object.keys(this.#servers)) {
+        const guild = await this?.guilds.fetch(guildId);
+        const botRole = await guild.roles.botRoleFor(this.user.id);
+  
+        const assignmentRoles = this.getServerConfiguration(guildId).accessRole;
+  
+        assignmentRoles.forEach(async roleToAdd => {
+          const roleComparison = await guild.roles.comparePositions(botRole, roleToAdd);
+  
+          if (roleComparison <= 0) {
+            reject(`Role ${roleToAdd} is lower in the role hierachy in comparison to the bot's role. The bot role needs to be moved higher in the role hierarchy settings for the server.`);
+          }
+        })
+  
+        const roleRemovalEnabled = this.getServerConfiguration(guildId).roleRemoval.enabled;
+  
+        if (roleRemovalEnabled) {
+          const removalRoles = this.getServerConfiguration(guildId).roleRemoval.roleId;
+  
+          removalRoles.forEach(async roleToRemove => {
+            const roleComparison = await guild.roles.comparePositions(botRole, roleToRemove);
+  
+            if (roleComparison <= 0) {
+              reject(`Role ${roleToRemove} is lower in the role hierachy in comparison to the bot's role. The bot role needs to be moved higher in the role hierarchy settings for the server.`);
+            }
+          })
+        }
       }
 
-      return true;
-    }));
+      resolve(true);
+    })
 
     return await !roleConfigurations.includes(false);
   }
 
   /**
-   * Gets the Discord role that should be added to users that have been granted access, by server ID
+   * Gets the JSON bot configuration for a server, given a server ID.
    * @param {Snowflake} serverId
-   * @returns {Snowflake}
+   * @returns {Object}
    */
-  getRoleByServerID(serverId) {
-    return this.#servers[serverId].accessRole;
-  }
-
-  /**
-   * Gets the separator that should be used in nicknames for a server
-   * @param {Snowflake} serverId
-   * @returns {string}
-   */
-  getNickSeparatorByServerID(serverId) {
-    return this.#servers[serverId].separator;
+  getServerConfiguration(serverId) {
+    return this.#servers[serverId];
   }
 
   /**

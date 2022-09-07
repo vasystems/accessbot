@@ -1,8 +1,12 @@
 module.exports = async (client) => {
   console.log('Client ready');
-  const correctRoleConfig = await client.checkRoleConfiguration();
 
-  if (!correctRoleConfig) throw new Error('Role configuration is incorrect. Bot will not work.')
+  try {
+      await client.checkRoleConfiguration();
+  } catch(e) {
+    throw new Error(e);
+    return;
+  }
 
   console.log('Roles are configured correctly');
   
