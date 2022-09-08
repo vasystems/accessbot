@@ -62,13 +62,15 @@ const ACCESS_REQUEST_MODAL = {
 
       const roleRemovalEnabled = serverConfiguration.roleRemoval.enabled;
 
+      let userRoles = new Array(...interaction.member.roles.cache.keys());
+
       if (roleRemovalEnabled) {
-        console.log(serverConfiguration.roleRemoval.roleId);
-        await interaction.member.roles.remove(serverConfiguration.roleRemoval.roleId)
+        userRoles = userRoles.filter(role => { return serverConfiguration.roleRemoval.roleId.indexOf(role) === -1 })
       }
 
-      await interaction.member.roles.add(serverConfiguration.accessRole);
+      userRoles.push(...serverConfiguration.accessRole);
 
+      await interaction.member.roles.set(userRoles);
       await interaction.followUp({content: `Welcome to ${interaction.guild.name}!`});
     } catch(e) {
       console.log(e);
