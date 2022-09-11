@@ -24,7 +24,7 @@ To configure this bot, a `config` folder needs to be made in the root directory 
 ```
 
 ## Installation
-To install all dependencies required by the bot, run `npm install` in the root directory.
+To install all dependencies required by the bot, run `npm install` in the root directory. Node v16.9.0 or higher is required.
 
 ## Need help?
 This bot was created for the use of [vEXS](https://vexs.uk), a virtual airline hosted on vAMSYS that simulates the real world operations of Jet2.com.
