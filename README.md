@@ -4,10 +4,10 @@ This is a bot specifically designed for the purpose of handling Discord access r
 ## Configuration
 To configure this bot, a `config` folder needs to be made in the root directory that contains the `src`, `index.js` and `README.md` files with the following file:
 
-### discord.json
+### config.json
 ```js
 {
-  "airlineID": "", // prefix for pilot ID usernames in the server
+  "airlineID": "", // prefix for pilot ID usernames in the serve
   "vamsysKey": "", // 'abcdefgh-ijkl-mnop-qrst-uvwxyz012345'
   "discordToken": "", // Discord bot token
   "servers": {
