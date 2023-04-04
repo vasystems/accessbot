@@ -31,7 +31,7 @@ class DiscordBot extends Client {
         const guild = await this?.guilds.fetch(guildId);
         const botRole = await guild.roles.botRoleFor(this.user.id);
   
-        const assignmentRoles = this.getServerConfiguration(guildId).accessRole;
+        const assignmentRoles = this.getServerConfiguration(guildId).accessRoleId;
   
         assignmentRoles.forEach(async roleToAdd => {
           const roleComparison = await guild.roles.comparePositions(botRole, roleToAdd);

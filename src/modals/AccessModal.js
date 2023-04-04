@@ -68,7 +68,7 @@ const ACCESS_REQUEST_MODAL = {
         userRoles = userRoles.filter(role => { return serverConfiguration.roleRemoval.roleId.indexOf(role) === -1 })
       }
 
-      userRoles.push(...serverConfiguration.accessRole);
+      userRoles.push(...serverConfiguration.accessRoleId);
 
       await interaction.member.roles.set(userRoles);
       await interaction.followUp({content: `Welcome to ${interaction.guild.name}!`});
