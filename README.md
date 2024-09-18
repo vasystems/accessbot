@@ -1,3 +1,6 @@
+# Notice
+From 26th September 2024, the API endpoint that this bot uses has been closed. vAMSYS now offer thier own Access bot that can be used instead, details are at https://docs.vamsys.dev
+
 # Access Bot
 This is a bot specifically designed for the purpose of handling Discord access requests for vAMSYS virtual airlines.
 
@@ -29,4 +32,4 @@ To install all dependencies required by the bot, run `npm install` in the root d
 ## Need help?
 This bot was created for the use of [vEXS](https://vexs.uk), a virtual airline hosted on vAMSYS that simulates the real world operations of Jet2.com.
 
-For any assistance with configuring the bot, or any other queries at all, please contact [webmaster@vexs.uk](mailto:webmaster@vexs.uk).
+
